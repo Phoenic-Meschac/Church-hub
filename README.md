@@ -121,7 +121,7 @@ Chaque utilisateur possède un ou plusieurs **rôles**, chaque rôle regroupe de
 
 ## 🚀 Déploiement sur Render
 
-Le projet inclut un **Blueprint** `render.yaml` qui provisionne automatiquement 3 composants : base **PostgreSQL**, **API Django** (gunicorn + WhiteNoise), **frontend Next.js**.
+Le projet inclut un **Blueprint** `render.yaml` qui déploie l'**API Django** (gunicorn + WhiteNoise) et le **frontend Next.js**. La base **PostgreSQL** est externe et gratuite via [Neon](https://neon.tech) (Render n'autorise qu'une seule base gratuite par compte).
 
 ### Prérequis
 - Un compte [Render](https://render.com)
@@ -143,17 +143,20 @@ git remote add origin https://github.com/<votre-compte>/churchhub.git
 git push -u origin main
 ```
 
-### 2. Déployer le Blueprint
-1. Render → **New +** → **Blueprint**.
-2. Connectez le dépôt `churchhub`.
-3. Render détecte `render.yaml` et propose les 3 services → **Apply**.
-4. Le build exécute automatiquement `collectstatic`, `migrate` puis `seed` (données de démo + compte admin).
+### 2. Créer la base PostgreSQL (Neon, gratuit)
+Sur [neon.tech](https://neon.tech) → créez un projet → copiez la **Connection string**
+(format `postgresql://user:pass@ep-xxx.neon.tech/dbname?sslmode=require`).
 
-### 3. Vérifier les URL (important)
+### 3. Déployer le Blueprint
+1. Render → **New +** → **Blueprint** → connectez le dépôt.
+2. Render détecte `render.yaml` et propose 2 services web, puis demande de saisir **`DATABASE_URL`** → collez la chaîne Neon.
+3. **Apply**. Le build exécute `collectstatic`, `migrate` puis `seed` (données de démo + compte admin).
+
+### 4. Vérifier les URL (important)
 Le blueprint suppose `churchhub-api.onrender.com` et `churchhub-web.onrender.com`. Si Render attribue un autre nom, ajustez ces variables d'environnement puis redéployez :
 - Service **churchhub-web** : `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_MEDIA_URL` → URL réelle de l'API
 - Service **churchhub-api** : `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS` → URL réelle du frontend
 
 L'application est ensuite accessible sur l'URL du service **churchhub-web**. Connexion : `admin@churchhub.local` / `admin123`.
 
-> **Plan gratuit Render** : les services s'endorment après inactivité (premier accès lent ~30 s), la base PostgreSQL gratuite expire après 90 jours, et les fichiers uploadés ne persistent pas (disque éphémère — brancher un stockage type S3/Cloudinary pour une vraie prod).
+> **Plans gratuits** : les services Render s'endorment après inactivité (premier accès lent ~30 s) et la base Neon se met en veille (réveil en ~1 s). Les fichiers uploadés ne persistent pas (disque éphémère — brancher un stockage type S3/Cloudinary pour une vraie prod).

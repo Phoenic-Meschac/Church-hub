@@ -98,7 +98,9 @@ DATABASE_URL = env("DATABASE_URL", default="")
 if DATABASE_URL:
     # Render (et la plupart des hébergeurs) fournissent une URL de connexion
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        "default": dj_database_url.parse(
+            DATABASE_URL, conn_max_age=600, conn_health_checks=True, ssl_require=True
+        )
     }
 elif env("USE_SQLITE"):
     DATABASES = {

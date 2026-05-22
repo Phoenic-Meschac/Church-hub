@@ -1,16 +1,12 @@
 # Blueprint Render pour ChurchHub (https://render.com)
-# Déploie : PostgreSQL + API Django + frontend Next.js
+# Déploie : API Django + frontend Next.js
+# La base PostgreSQL est EXTERNE (ex. Neon, neon.tech) : à l'« Apply », Render
+# vous demandera de saisir DATABASE_URL (la chaîne de connexion de votre base Neon).
 #
 # IMPORTANT : les URL onrender.com ci-dessous supposent que les noms de service
 # "churchhub-api" et "churchhub-web" sont disponibles. Si Render leur attribue un
 # suffixe (nom déjà pris), mettez à jour NEXT_PUBLIC_API_URL, NEXT_PUBLIC_MEDIA_URL,
 # CORS_ALLOWED_ORIGINS et CSRF_TRUSTED_ORIGINS avec les vraies URL, puis redéployez.
-
-databases:
-  - name: churchhub-db
-    databaseName: churchhub
-    user: churchhub
-    plan: free
 
 services:
   # -------------------------------------------------------------- API Django
@@ -30,9 +26,7 @@ services:
       - key: DEBUG
         value: "False"
       - key: DATABASE_URL
-        fromDatabase:
-          name: churchhub-db
-          property: connectionString
+        sync: false
       - key: CORS_ALLOWED_ORIGINS
         value: "https://churchhub-web.onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
