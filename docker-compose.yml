@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16
+    container_name: churchhub_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: churchhub
+      POSTGRES_USER: churchhub
+      POSTGRES_PASSWORD: churchhub
+    ports:
+      # Port hôte 5544 pour éviter tout conflit avec un PostgreSQL local (5432/5433)
+      - "5544:5432"
+    volumes:
+      - churchhub_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U churchhub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  churchhub_pgdata:
